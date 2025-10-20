@@ -78,22 +78,10 @@
             max-width: 100%;
         }
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--dark-grey);
-            font-weight: 600;
-            transition: color 0.3s ease;
-            font-size: 1.1rem;
-        }
-
-        .nav-links a:hover {
-            color: var(--tvtc-green);
+        .trainer-name {
+            font-size: 1.5rem;
+            color: #006747;
+            font-weight: bold;
         }
 
         /* === المحتوى الرئيسي - الشرائح === */
@@ -387,8 +375,11 @@
 
         .media-image {
             max-width: 100%;
+            max-height: 400px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            object-fit: contain;
+            border: 1px solid #e0e0e0;
         }
 
         /* === العصف الذهني === */
@@ -658,12 +649,9 @@
         <div class="logo">
             <img src="https://tvtc.gov.sa/Style%20Library/tvtc/images/logo.svg" alt="شعار المؤسسة العامة للتدريب التقني والمهني">
         </div>
-        <ul class="nav-links">
-            <li><a href="#slide0">الرئيسية</a></li>
-            <li><a href="#slide1">المصفوفات</a></li>
-            <li><a href="#slide13">المحددات</a></li>
-            <li><a href="#slide20">الاختبار</a></li>
-        </ul>
+        <div class="trainer-name">
+            المدربة شروق الحربي
+        </div>
     </header>
 
     <!-- القائمة الجانبية للتنقل بين الشرائح -->
@@ -711,7 +699,7 @@
                         <p class="content-text">انظري إلى الصورة التالية وأحصي عدد أحمر الشفاه:</p>
                         <div class="media-container">
                             <div class="media-item">
-                                <img src="lipstick-count.png" alt="أنواع أحمر الشفاه" class="media-image">
+                                <img src="lipstick-count.jpg" alt="أنواع أحمر الشفاه" class="media-image">
                             </div>
                         </div>
                         <div class="quiz-container">
@@ -741,14 +729,16 @@
                 <div class="slide-body">
                     <div class="content-section">
                         <h2 class="content-title">انظري إلى الصورة التالية</h2>
-                        <p class="content-text">قبل أن نبدأ في دراسة المصفوفات، انظري إلى الصورة التالية ولاحظي كيف يمكن تنظيم البيانات في صفوف وأعمدة:</p>
+                        <p class="content-text">قبل أن نبدأ في دراسة المصفوفات، انظري إلى الصورة التالية ولاحظي كيف يمكن تنظيم الملابس في صفوف وأعمدة:</p>
                         
                         <!-- مكان للصورة -->
-                        <div class="image-placeholder">
-                            <img src="matrix-intro.jpg" alt="صورة تمهيدية للمصفوفات" class="media-image">
+                        <div class="media-container">
+                            <div class="media-item">
+                                <img src="matrix-intro.jpg" alt="صورة تمهيدية للمصفوفات" class="media-image">
+                            </div>
                         </div>
                         
-                        <p class="content-text">ما الذي يمكن أن تمثله هذه الصورة؟ وكيف يمكن تنظيم البيانات فيها؟</p>
+                        <p class="content-text">ما الذي يمكن أن تمثله هذه الصورة؟ وكيف يمكن تنظيم الملابس فيها؟</p>
                     </div>
                 </div>
                 <div class="nav-buttons">
@@ -768,8 +758,10 @@
                         <p class="content-text">انظري إلى الصورة التالية وأحصي عدد أحمر الشفاه:</p>
                         
                         <!-- مكان للصورة -->
-                        <div class="image-placeholder">
-                            <img src="lipstick-count-2.png" alt="صورة أحمر الشفاه للعد" class="media-image">
+                        <div class="media-container">
+                            <div class="media-item">
+                                <img src="lipstick-count-2.png" alt="صورة أحمر الشفاه للعد" class="media-image">
+                            </div>
                         </div>
                         
                         <div class="quiz-container">
@@ -1969,8 +1961,10 @@
                         <p class="content-text">حاصل ضرب عناصر القطر الرئيسي (النازل) - حاصل ضرب عناصر القطر الفرعي (الصاعد)</p>
                         
                         <!-- مكان للصورة -->
-                        <div class="image-placeholder">
-                            <img src="determinant-2x2.png" alt="قانون إيجاد المحدد 2×2" class="media-image">
+                        <div class="media-container">
+                            <div class="media-item">
+                                <img src="determinant-2x2.png" alt="قانون إيجاد المحدد 2×2" class="media-image">
+                            </div>
                         </div>
                         
                         <p class="math-equation">\( A = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \)</p>
@@ -1994,8 +1988,10 @@
                         <p class="content-text">نستطيع إيجاده بطريقة تكرار الأقطار أو باستخدام طريقة لابلاس للتوسيع.</p>
                         
                         <!-- مكان للصورة -->
-                        <div class="image-placeholder">
-                            <img src="determinant-3x3.png" alt="قانون إيجاد المحدد 3×3 فاكثر" class="media-image">
+                        <div class="media-container">
+                            <div class="media-item">
+                                <img src="determinant-3x3.png" alt="قانون إيجاد المحدد 3×3 فاكثر" class="media-image">
+                            </div>
                         </div>
                         
                         <p class="math-equation">\( A = \begin{bmatrix} a_1 & b_1 & c_1 \\ a_2 & b_2 & c_2 \\ a_3 & b_3 & c_3 \end{bmatrix} \)</p>
