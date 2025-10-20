@@ -1,0 +1,3010 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة قياس ارتباط المقررات بسوق العمل - TVTC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* === إعدادات عامة === */
+        :root {
+            --tvtc-green: #006747;
+            --dark-grey: #333333;
+            --light-grey: #f4f4f4;
+            --white: #ffffff;
+            --accent: #00a86b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--white);
+            color: var(--dark-grey);
+            line-height: 1.6;
+            overflow-x: hidden;
+            font-size: 18px; /* زيادة حجم الخط الأساسي */
+        }
+
+        /* === شريط التقدم === */
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--tvtc-green), var(--accent));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        /* === الهيدر والشعار === */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5%;
+            background-color: var(--white);
+            border-bottom: 1px solid #ddd;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            height: 80px;
+        }
+
+        .header .logo img {
+            height: 50px;
+            width: auto;
+            max-width: 100%;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-grey);
+            font-weight: 600;
+            transition: color 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--tvtc-green);
+        }
+
+        /* === المحتوى الرئيسي - الشرائح === */
+        .slides-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 80px; /* تعويض ارتفاع الهيدر */
+            height: calc(100vh - 80px);
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 20px 8%; /* زيادة مساحة العرض */
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .slide-content {
+            max-width: 1400px; /* زيادة عرض المحتوى */
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-title {
+            font-size: 2.8rem; /* زيادة حجم العنوان */
+            color: var(--tvtc-green);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 800;
+            border-bottom: 3px solid var(--tvtc-green);
+            padding-bottom: 10px;
+        }
+
+        .slide-body {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex-grow: 1;
+            justify-content: flex-start;
+            padding-bottom: 80px; /* مساحة للأزرار */
+        }
+
+        /* === تنسيقات المحتوى === */
+        .content-section {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 30px; /* زيادة المساحة الداخلية */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-right: 5px solid var(--tvtc-green);
+        }
+
+        .content-title {
+            font-size: 1.9rem; /* زيادة حجم العنوان */
+            color: var(--tvtc-green);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .content-text {
+            font-size: 1.3rem; /* زيادة حجم النص */
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, transparent 90%, #ffeb3b 90%, #ffeb3b 100%);
+            padding: 0 3px;
+        }
+
+        /* === المصفوفات الرياضية === */
+        .matrix-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .matrix {
+            display: inline-block;
+            border: 2px solid var(--dark-grey);
+            border-radius: 5px;
+            margin: 10px;
+            padding: 5px;
+            background: white;
+        }
+
+        .matrix-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .matrix-element {
+            padding: 10px 15px;
+            text-align: center;
+            min-width: 50px;
+            font-size: 1.3rem; /* زيادة حجم عناصر المصفوفة */
+        }
+
+        .matrix-bracket {
+            font-size: 2.2rem; /* زيادة حجم الأقواس */
+            font-weight: bold;
+            padding: 0 5px;
+            color: var(--tvtc-green);
+        }
+
+        /* === الأنشطة التفاعلية === */
+        .activity {
+            background: var(--light-grey);
+            border-radius: 10px;
+            padding: 30px; /* زيادة المساحة الداخلية */
+            margin: 20px 0;
+            border-right: 5px solid var(--accent);
+        }
+
+        .activity-title {
+            font-size: 1.6rem; /* زيادة حجم العنوان */
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .quiz-container {
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            font-size: 1.3rem; /* زيادة حجم السؤال */
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .quiz-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .quiz-option {
+            background: var(--white);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #e0e0e0;
+            text-align: center;
+            font-size: 1.2rem; /* زيادة حجم خيارات الاختبار */
+        }
+
+        .quiz-option:hover {
+            border-color: var(--tvtc-green);
+            background: #f0f7ff;
+        }
+
+        .quiz-option.selected {
+            background: var(--tvtc-green);
+            color: var(--white);
+            border-color: var(--tvtc-green);
+        }
+
+        .quiz-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-weight: 500;
+            font-size: 1.2rem; /* زيادة حجم نتيجة الاختبار */
+        }
+
+        .quiz-result.correct {
+            background: rgba(0, 103, 71, 0.15);
+            border: 1px solid var(--tvtc-green);
+            color: var(--tvtc-green);
+        }
+
+        .quiz-result.incorrect {
+            background: rgba(220, 53, 69, 0.15);
+            border: 1px solid #dc3545;
+            color: #dc3545;
+        }
+
+        /* === أزرار التنقل === */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 15px 0;
+        }
+
+        .btn {
+            background: var(--tvtc-green);
+            color: var(--white);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2rem; /* زيادة حجم النص في الأزرار */
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-prev i {
+            margin-right: 8px;
+        }
+
+        .btn-next i {
+            margin-left: 8px;
+        }
+
+        /* === تقدم الشرائح === */
+        .slide-progress {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .progress-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #ddd;
+            margin: 0 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .progress-dot.active {
+            background: var(--tvtc-green);
+            transform: scale(1.3);
+        }
+
+        .progress-dot.completed {
+            background: var(--accent);
+        }
+
+        /* === الوسائط المتعددة === */
+        .media-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .media-item {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .media-image {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* === العصف الذهني === */
+        .brainstorming {
+            background: #fff9e6;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            border-right: 5px solid #ffc107;
+        }
+
+        .brainstorming-title {
+            color: #ffc107;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* === ارتباط سوق العمل === */
+        .market-connection {
+            background: #e8f4fd;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            border-right: 5px solid #0dcaf0;
+        }
+
+        .market-connection-title {
+            color: #0dcaf0;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* === القائمة الجانبية للشرائح === */
+        .slide-nav {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 15px;
+            z-index: 90;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .slide-nav-list {
+            list-style: none;
+        }
+
+        .slide-nav-item {
+            margin-bottom: 10px;
+        }
+
+        .slide-nav-link {
+            display: block;
+            padding: 10px 15px;
+            background: var(--light-grey);
+            border-radius: 5px;
+            text-decoration: none;
+            color: var(--dark-grey);
+            font-weight: 600;
+            transition: all 0.3s;
+            border-right: 3px solid transparent;
+            font-size: 1rem;
+        }
+
+        .slide-nav-link:hover, .slide-nav-link.active {
+            background: var(--tvtc-green);
+            color: var(--white);
+            border-right-color: var(--accent);
+        }
+
+        /* === التكيف مع الشاشات الصغيرة === */
+        @media (max-width: 992px) {
+            .slide-nav {
+                display: none;
+            }
+            
+            .header {
+                flex-direction: column;
+                padding: 10px 5%;
+                height: auto;
+                position: relative;
+            }
+            
+            .nav-links {
+                margin-top: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .slide-title {
+                font-size: 2rem;
+            }
+            
+            .slides-container {
+                margin-top: 0;
+                height: auto;
+            }
+            
+            .slide {
+                padding: 20px 5%; /* تعديل المساحة على الشاشات الصغيرة */
+            }
+        }
+
+        /* === تأثيرات إضافية === */
+        .definition {
+            background: #f0f7ff;
+            border-right: 4px solid var(--tvtc-green);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .example {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .formula {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1.3rem; /* زيادة حجم النص في الصيغ */
+            border-right: 4px solid var(--tvtc-green);
+        }
+
+        .step-by-step {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .step {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #dee2e6;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--tvtc-green);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .math-formula {
+            font-family: 'Courier New', monospace;
+            font-size: 1.3rem; /* زيادة حجم النص في الصيغ الرياضية */
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 5px 0;
+        }
+
+        /* === أهداف التعلم === */
+        .learning-objectives {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            border-right: 5px solid #4caf50;
+        }
+
+        .objectives-title {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .objectives-list {
+            list-style-type: none;
+            padding-right: 20px;
+        }
+
+        .objectives-list li {
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            position: relative;
+            padding-right: 30px;
+        }
+
+        .objectives-list li:before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        /* === تنسيقات إضافية للرياضيات === */
+        .math-equation {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.4rem;
+        }
+
+        .math-equation .frac {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            margin: 0 0.2em;
+        }
+
+        .math-equation .frac > span {
+            display: block;
+            padding: 0.1em;
+        }
+
+        .math-equation .frac span.bottom {
+            border-top: 1px solid;
+        }
+
+        .math-equation .frac span.symbol {
+            display: none;
+        }
+
+        /* === أماكن الصور الفارغة === */
+        .image-placeholder {
+            width: 100%;
+            height: 400px;
+            background-color: #f0f0f0;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            color: #666;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التقدم -->
+    <div class="loading-bar" id="loadingBar"></div>
+
+    <!-- الهيدر -->
+    <header class="header">
+        <div class="logo">
+            <img src="https://tvtc.gov.sa/Style%20Library/tvtc/images/logo.svg" alt="شعار المؤسسة العامة للتدريب التقني والمهني">
+        </div>
+        <ul class="nav-links">
+            <li><a href="#slide0">الرئيسية</a></li>
+            <li><a href="#slide1">المصفوفات</a></li>
+            <li><a href="#slide13">المحددات</a></li>
+            <li><a href="#slide20">الاختبار</a></li>
+        </ul>
+    </header>
+
+    <!-- القائمة الجانبية للتنقل بين الشرائح -->
+    <nav class="slide-nav">
+        <ul class="slide-nav-list">
+            <li class="slide-nav-item"><a href="#slide0" class="slide-nav-link active">مقدمة</a></li>
+            <li class="slide-nav-item"><a href="#slide1" class="slide-nav-link">سؤال: ماذا تلاحظين؟</a></li>
+            <li class="slide-nav-item"><a href="#slide2" class="slide-nav-link">كم عدد أحمر الشفاه؟</a></li>
+            <li class="slide-nav-item"><a href="#slide3" class="slide-nav-link">أهداف المصفوفات</a></li>
+            <li class="slide-nav-item"><a href="#slide4" class="slide-nav-link">تعريف المصفوفات</a></li>
+            <li class="slide-nav-item"><a href="#slide5" class="slide-nav-link">أنواع المصفوفات</a></li>
+            <li class="slide-nav-item"><a href="#slide6" class="slide-nav-link">رتبة المصفوفة</a></li>
+            <li class="slide-nav-item"><a href="#slide7" class="slide-nav-link">تساوي المصفوفات</a></li>
+            <li class="slide-nav-item"><a href="#slide8" class="slide-nav-link">منقول المصفوفة</a></li>
+            <li class="slide-nav-item"><a href="#slide9" class="slide-nav-link">جمع وطرح المصفوفات</a></li>
+            <li class="slide-nav-item"><a href="#slide10" class="slide-nav-link">ضرب مصفوفة بعدد</a></li>
+            <li class="slide-nav-item"><a href="#slide11" class="slide-nav-link">ضرب المصفوفات</a></li>
+            <li class="slide-nav-item"><a href="#slide12" class="slide-nav-link">أهداف المحددات</a></li>
+            <li class="slide-nav-item"><a href="#slide13" class="slide-nav-link">مقدمة المحددات</a></li>
+            <li class="slide-nav-item"><a href="#slide14" class="slide-nav-link">قانون المحدد 2×2</a></li>
+            <li class="slide-nav-item"><a href="#slide15" class="slide-nav-link">قانون المحدد 3×3</a></li>
+            <li class="slide-nav-item"><a href="#slide16" class="slide-nav-link">محدد 2×2</a></li>
+            <li class="slide-nav-item"><a href="#slide17" class="slide-nav-link">محدد 3×3</a></li>
+            <li class="slide-nav-item"><a href="#slide18" class="slide-nav-link">مثال محدد 3×3</a></li>
+            <li class="slide-nav-item"><a href="#slide19" class="slide-nav-link">معكوس المصفوفة</a></li>
+            <li class="slide-nav-item"><a href="#slide20" class="slide-nav-link">اختبار نهائي</a></li>
+        </ul>
+    </nav>
+
+    <!-- الشرائح التعليمية -->
+    <div class="slides-container">
+        <!-- الشريحة 0: مقدمة -->
+        <div class="slide active" id="slide0">
+            <div class="slide-content">
+                <h1 class="slide-title">المصفوفات والمحددات</h1>
+                <div class="slide-body">
+                    <div class="content-section">
+                        <h2 class="content-title">مقدمة في المصفوفات والمحددات</h2>
+                        <p class="content-text">المصفوفات هي <span class="highlight">طريقة منظمة لترتيب البيانات</span> في صفوف وأعمدة. وهي أداة قوية في الرياضيات والبرمجة لتخزين وتحليل المعلومات.</p>
+                        <p class="content-text">تستخدم المصفوفات في مجالات متنوعة مثل الاقتصاد والأرصاد الجوية والإنتاج الصناعي. في هذا العرض، ستعرفين على مفهوم المصفوفات والمحددات وكيفية استخدامها لتنظيم البيانات وتحليلها بطريقة فعالة.</p>
+                    </div>
+                    
+                    <div class="activity">
+                        <h3 class="activity-title">نشاط تفاعلي: عددي العناصر</h3>
+                        <p class="content-text">انظري إلى الصورة التالية وأحصي عدد أحمر الشفاه:</p>
+                        <div class="media-container">
+                            <div class="media-item">
+                                <img src="lipstick-count.jpg" alt="أنواع أحمر الشفاه" class="media-image">
+                            </div>
+                        </div>
+                        <div class="quiz-container">
+                            <div class="quiz-question">كم عدد أحمر الشفاه في الصورة؟</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="5">5</div>
+                                <div class="quiz-option" data-value="8">8</div>
+                                <div class="quiz-option" data-value="12">12</div>
+                                <div class="quiz-option" data-value="15">15</div>
+                            </div>
+                            <button class="btn" id="checkAnswer0">تحقق من الإجابة</button>
+                            <div class="quiz-result" id="quizResult0"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev" disabled><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 1: سؤال: ماذا تلاحظين؟ -->
+        <div class="slide" id="slide1">
+            <div class="slide-content">
+                <h1 class="slide-title">سؤال: ماذا تلاحظين بهذه الصورة؟</h1>
+                <div class="slide-body">
+                    <div class="content-section">
+                        <h2 class="content-title">انظري إلى الصورة التالية</h2>
+                        <p class="content-text">قبل أن نبدأ في دراسة المصفوفات، انظري إلى الصورة التالية ولاحظي كيف يمكن تنظيم البيانات في صفوف وأعمدة:</p>
+                        
+                        <!-- مكان للصورة -->
+                        <div class="image-placeholder">
+                            <img src="matrix-intro.jpg" alt="صورة تمهيدية للمصفوفات" class="media-image">
+                        </div>
+                        
+                        <p class="content-text">ما الذي يمكن أن تمثله هذه الصورة؟ وكيف يمكن تنظيم البيانات فيها؟</p>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 2: كم عدد أحمر الشفاه؟ -->
+        <div class="slide" id="slide2">
+            <div class="slide-content">
+                <h1 class="slide-title">كم عدد أحمر الشفاه في الصورة؟</h1>
+                <div class="slide-body">
+                    <div class="activity">
+                        <h3 class="activity-title">نشاط تفاعلي: عددي العناصر</h3>
+                        <p class="content-text">انظري إلى الصورة التالية وأحصي عدد أحمر الشفاه:</p>
+                        
+                        <!-- مكان للصورة -->
+                        <div class="image-placeholder">
+                            <img src="lipstick-count-2.jpg" alt="صورة أحمر الشفاه للعد" class="media-image">
+                        </div>
+                        
+                        <div class="quiz-container">
+                            <div class="quiz-question">كم عدد أحمر الشفاه في الصورة؟</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="5">5</div>
+                                <div class="quiz-option" data-value="8">8</div>
+                                <div class="quiz-option" data-value="12">12</div>
+                                <div class="quiz-option" data-value="15">15</div>
+                            </div>
+                            <button class="btn" id="checkAnswer2">تحقق من الإجابة</button>
+                            <div class="quiz-result" id="quizResult2"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 3: أهداف المصفوفات -->
+        <div class="slide" id="slide3">
+            <div class="slide-content">
+                <h1 class="slide-title">أهداف تعلم المصفوفات</h1>
+                <div class="slide-body">
+                    <div class="learning-objectives">
+                        <h2 class="objectives-title">الأهداف التعليمية للمصفوفات</h2>
+                        <ul class="objectives-list">
+                            <li>تعريف المصفوفة ومكوناتها الأساسية</li>
+                            <li>تحديد رتبة المصفوفة (عدد الصفوف والأعمدة)</li>
+                            <li>التعرف على أنواع المصفوفات المختلفة</li>
+                            <li>فهم شروط تساوي المصفوفات</li>
+                            <li>إيجاد منقول المصفوفة (Transpose)</li>
+                            <li>تطبيق العمليات الحسابية الأساسية على المصفوفات</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="market-connection">
+                        <h3 class="market-connection-title">ارتباط بسوق العمل</h3>
+                        <p class="content-text">المصفوفات أساسية في مجالات مثل:</p>
+                        <ul class="content-text">
+                            <li>علوم البيانات والذكاء الاصطناعي</li>
+                            <li>البرمجة وتطوير التطبيقات</li>
+                            <li>الرسوميات الحاسوبية والألعاب</li>
+                            <li>التحليل المالي والاقتصادي</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 4: تعريف المصفوفات -->
+        <div class="slide" id="slide4">
+            <div class="slide-content">
+                <h1 class="slide-title">تعريف المصفوفة وأهميتها</h1>
+                <div class="slide-body">
+                    <div class="definition">
+                        <h2 class="content-title">تعريف المصفوفة</h2>
+                        <p class="content-text">المصفوفة هي ترتيب وتنظيم المجموعة من العناصر على شكل صفوف وأعمدة.</p>
+                    </div>
+                    
+                    <div class="content-section">
+                        <h2 class="content-title">أهميتها في القرآن</h2>
+                        <p class="content-text">وردت كلمة "مصفوفة" في القرآن الكريم في سورتي الغاشية والطور، مما يدل على أهميتها.</p>
+                    </div>
+                    
+                    <div class="content-section">
+                        <h2 class="content-title">استخدامات البرمجة</h2>
+                        <p class="content-text">تستخدم المصفوفات في أنظمة كثيرة في البرمجة مثل C و Java لتخزين مجموعة من البيانات بطريقة منظمة.</p>
+                    </div>
+                    
+                    <div class="content-section">
+                        <h2 class="content-title">مميزات المصفوفات</h2>
+                        <p class="content-text">تساعد في تخزين البيانات المتعلقة بمعلومة معينة وترتيبها وفهرستها بشكل فعال.</p>
+                    </div>
+                    
+                    <div class="example">
+                        <h2 class="content-title">مثال على مصفوفة</h2>
+                        <p class="content-text">مصفوفة تحتوي على 3 صفوف و 3 أعمدة:</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">1</div>
+                                    <div class="matrix-element">2</div>
+                                    <div class="matrix-element">3</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">4</div>
+                                    <div class="matrix-element">5</div>
+                                    <div class="matrix-element">6</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">7</div>
+                                    <div class="matrix-element">8</div>
+                                    <div class="matrix-element">9</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 5: أنواع المصفوفات -->
+        <div class="slide" id="slide5">
+            <div class="slide-content">
+                <h1 class="slide-title">أنواع المصفوفات وخصائصها</h1>
+                <div class="slide-body">
+                    <div class="media-container">
+                        <div class="media-item">
+                            <h2 class="content-title">المصفوفة المربعة</h2>
+                            <p class="content-text">عدد الصفوف = عدد الأعمدة</p>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">1</div>
+                                        <div class="matrix-element">2</div>
+                                        <div class="matrix-element">3</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">4</div>
+                                        <div class="matrix-element">5</div>
+                                        <div class="matrix-element">6</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">7</div>
+                                        <div class="matrix-element">8</div>
+                                        <div class="matrix-element">9</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="media-item">
+                            <h2 class="content-title">المصفوفة الصفرية</h2>
+                            <p class="content-text">جميع عناصرها أصفار</p>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">0</div>
+                                        <div class="matrix-element">0</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">0</div>
+                                        <div class="matrix-element">0</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="media-container">
+                        <div class="media-item">
+                            <h2 class="content-title">مصفوفة الصف</h2>
+                            <p class="content-text">تتكون من صف واحد فقط</p>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">1</div>
+                                        <div class="matrix-element">2</div>
+                                        <div class="matrix-element">3</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="media-item">
+                            <h2 class="content-title">مصفوفة العمود</h2>
+                            <p class="content-text">تتكون من عمود واحد فقط</p>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">1</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">2</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">3</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity">
+                        <h3 class="activity-title">مسابقة: تحديد نوع المصفوفة</h3>
+                        <div class="quiz-container">
+                            <div class="quiz-question">ما نوع المصفوفة التالية؟</div>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">1</div>
+                                        <div class="matrix-element">0</div>
+                                        <div class="matrix-element">0</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">0</div>
+                                        <div class="matrix-element">1</div>
+                                        <div class="matrix-element">0</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">0</div>
+                                        <div class="matrix-element">0</div>
+                                        <div class="matrix-element">1</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="مربعة">مصفوفة مربعة</div>
+                                <div class="quiz-option" data-value="وحدة">مصفوفة وحدة</div>
+                                <div class="quiz-option" data-value="صف">مصفوفة صف</div>
+                                <div class="quiz-option" data-value="عمود">مصفوفة عمود</div>
+                            </div>
+                            <button class="btn" id="checkAnswer5">تحقق من الإجابة</button>
+                            <div class="quiz-result" id="quizResult5"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 6: رتبة المصفوفة -->
+        <div class="slide" id="slide6">
+            <div class="slide-content">
+                <h1 class="slide-title">رتبة المصفوفة</h1>
+                <div class="slide-body">
+                    <div class="definition">
+                        <h2 class="content-title">تعريف رتبة المصفوفة</h2>
+                        <p class="content-text">تحدد رتبة المصفوفة بعدد صفوفها وأعمدةها. فالمصفوفة المكونة من \( m \) صفاً و \( n \) عموداً تسمى مصفوفة من الرتبة \( m \times n \).</p>
+                    </div>
+                    
+                    <div class="example">
+                        <h2 class="content-title">أمثلة:</h2>
+                        <p class="content-text">المصفوفة A من الرتبة \( 2 \times 3 \):</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">3</div>
+                                    <div class="matrix-element">4</div>
+                                    <div class="matrix-element">1</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">5</div>
+                                    <div class="matrix-element">0</div>
+                                    <div class="matrix-element">-2</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="content-text">المصفوفة B من الرتبة \( 3 \times 3 \):</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">2</div>
+                                    <div class="matrix-element">7</div>
+                                    <div class="matrix-element">8</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">5</div>
+                                    <div class="matrix-element">9</div>
+                                    <div class="matrix-element">9</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">6</div>
+                                    <div class="matrix-element">2</div>
+                                    <div class="matrix-element">1</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity">
+                        <h3 class="activity-title">نشاط تفاعلي: تحديد الرتبة</h3>
+                        <div class="quiz-container">
+                            <div class="quiz-question">ما هي رتبة المصفوفة التالية؟</div>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">7</div>
+                                        <div class="matrix-element">2</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">4</div>
+                                        <div class="matrix-element">1</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">2</div>
+                                        <div class="matrix-element">-3</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="2x2">2 × 2</div>
+                                <div class="quiz-option" data-value="2x3">2 × 3</div>
+                                <div class="quiz-option" data-value="3x2">3 × 2</div>
+                                <div class="quiz-option" data-value="3x3">3 × 3</div>
+                            </div>
+                            <button class="btn" id="checkAnswer6">تحقق من الإجابة</button>
+                            <div class="quiz-result" id="quizResult6"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 7: تساوي المصفوفات -->
+        <div class="slide" id="slide7">
+            <div class="slide-content">
+                <h1 class="slide-title">تساوي المصفوفات</h1>
+                <div class="slide-body">
+                    <div class="definition">
+                        <h2 class="content-title">شروط تساوي المصفوفات</h2>
+                        <p class="content-text">تكون المصفوفتان متساويتين إذا كانتا من الرتبة نفسها، وتساوت عناصرهما المتناظرة.</p>
+                    </div>
+                    
+                    <div class="example">
+                        <h2 class="content-title">مثال:</h2>
+                        <p class="content-text">المصفوفتان A و D متساويتان:</p>
+                        
+                        <div class="media-container">
+                            <div class="media-item">
+                                <p class="content-text">المصفوفة A:</p>
+                                <div class="matrix-container">
+                                    <div class="matrix">
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">5</div>
+                                            <div class="matrix-element">3</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">1</div>
+                                            <div class="matrix-element">5</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">10</div>
+                                            <div class="matrix-element">12</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="media-item">
+                                <p class="content-text">المصفوفة D:</p>
+                                <div class="matrix-container">
+                                    <div class="matrix">
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">5</div>
+                                            <div class="matrix-element">3</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">1</div>
+                                            <div class="matrix-element">5</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">10</div>
+                                            <div class="matrix-element">12</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity">
+                        <h3 class="activity-title">مسابقة: تحديد المصفوفات المتساوية</h3>
+                        <div class="quiz-container">
+                            <div class="quiz-question">أي من المصفوفتين التاليتين متساوية مع المصفوفة F؟</div>
+                            <p class="content-text">المصفوفة F:</p>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">2</div>
+                                        <div class="matrix-element">1</div>
+                                        <div class="matrix-element">8</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">5</div>
+                                        <div class="matrix-element">6</div>
+                                        <div class="matrix-element">0</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="S1">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">2</div>
+                                                <div class="matrix-element">1</div>
+                                                <div class="matrix-element">0</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">5</div>
+                                                <div class="matrix-element">-1</div>
+                                                <div class="matrix-element">7</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="quiz-option" data-value="S2">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">2</div>
+                                                <div class="matrix-element">1</div>
+                                                <div class="matrix-element">8</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">5</div>
+                                                <div class="matrix-element">6</div>
+                                                <div class="matrix-element">0</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn" id="checkAnswer7">تحقق من الإجابة</button>
+                            <div class="quiz-result" id="quizResult7"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 8: منقول المصفوفة -->
+        <div class="slide" id="slide8">
+            <div class="slide-content">
+                <h1 class="slide-title">منقول المصفوفة</h1>
+                <div class="slide-body">
+                    <div class="definition">
+                        <h2 class="content-title">تعريف منقول المصفوفة</h2>
+                        <p class="content-text">منقول المصفوفة هو عملية نقل الصف إلى عمود أو نقل العمود إلى صف. بمعنى آخر، تحويل صفوف المصفوفة إلى أعمدة وأعمدتها إلى صفوف.</p>
+                    </div>
+                    
+                    <div class="example">
+                        <h2 class="content-title">مثال:</h2>
+                        <p class="content-text">إذا كانت المصفوفة A:</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">3</div>
+                                    <div class="matrix-element">0</div>
+                                    <div class="matrix-element">1</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">2</div>
+                                    <div class="matrix-element">1</div>
+                                    <div class="matrix-element">0</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="content-text">فإن منقول المصفوفة A<sup>T</sup> هو:</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">3</div>
+                                    <div class="matrix-element">2</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">0</div>
+                                    <div class="matrix-element">1</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">1</div>
+                                    <div class="matrix-element">0</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity">
+                        <h3 class="activity-title">نشاط تفاعلي: إيجاد المنقول</h3>
+                        <div class="quiz-container">
+                            <div class="quiz-question">ما هو منقول المصفوفة التالية؟</div>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">2</div>
+                                        <div class="matrix-element">4</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">3</div>
+                                        <div class="matrix-element">-1</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="option1">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">2</div>
+                                                <div class="matrix-element">3</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">4</div>
+                                                <div class="matrix-element">-1</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="quiz-option" data-value="option2">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">2</div>
+                                                <div class="matrix-element">4</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">3</div>
+                                                <div class="matrix-element">-1</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn" id="checkAnswer8">تحقق من الإجابة</button>
+                            <div class="quiz-result" id="quizResult8"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 9: جمع وطرح المصفوفات -->
+        <div class="slide" id="slide9">
+            <div class="slide-content">
+                <h1 class="slide-title">جمع وطرح المصفوفات</h1>
+                <div class="slide-body">
+                    <div class="definition">
+                        <h2 class="content-title">شروط جمع وطرح المصفوفات</h2>
+                        <p class="content-text">الشرط: أن تكون المصفوفات من نفس الرتبة (نفس عدد الصفوف والأعمدة).</p>
+                    </div>
+                    
+                    <div class="example">
+                        <h2 class="content-title">مثال على الجمع:</h2>
+                        <p class="content-text">إذا كانت:</p>
+                        <div class="media-container">
+                            <div class="media-item">
+                                <p class="content-text">المصفوفة A:</p>
+                                <div class="matrix-container">
+                                    <div class="matrix">
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">3</div>
+                                            <div class="matrix-element">2</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">1</div>
+                                            <div class="matrix-element">-4</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="media-item">
+                                <p class="content-text">المصفوفة B:</p>
+                                <div class="matrix-container">
+                                    <div class="matrix">
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">5</div>
+                                            <div class="matrix-element">0</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">2</div>
+                                            <div class="matrix-element">7</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="content-text">فإن A + B =</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">8</div>
+                                    <div class="matrix-element">2</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">3</div>
+                                    <div class="matrix-element">3</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="example">
+                        <h2 class="content-title">مثال على الطرح:</h2>
+                        <p class="content-text">إذا كانت:</p>
+                        <div class="media-container">
+                            <div class="media-item">
+                                <p class="content-text">المصفوفة A:</p>
+                                <div class="matrix-container">
+                                    <div class="matrix">
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">4</div>
+                                            <div class="matrix-element">6</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">2</div>
+                                            <div class="matrix-element">1</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="media-item">
+                                <p class="content-text">المصفوفة B:</p>
+                                <div class="matrix-container">
+                                    <div class="matrix">
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">1</div>
+                                            <div class="matrix-element">3</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">0</div>
+                                            <div class="matrix-element">2</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="content-text">فإن A - B =</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">3</div>
+                                    <div class="matrix-element">3</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">2</div>
+                                    <div class="matrix-element">-1</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity">
+                        <h3 class="activity-title">نشاط تفاعلي: جمع المصفوفات</h3>
+                        <div class="quiz-container">
+                            <div class="quiz-question">ما هو ناتج جمع المصفوفتين التاليتين؟</div>
+                            <div class="media-container">
+                                <div class="media-item">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">2</div>
+                                                <div class="matrix-element">1</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">0</div>
+                                                <div class="matrix-element">4</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="media-item">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">3</div>
+                                                <div class="matrix-element">2</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">1</div>
+                                                <div class="matrix-element">-4</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="option1">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">5</div>
+                                                <div class="matrix-element">3</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">1</div>
+                                                <div class="matrix-element">0</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="quiz-option" data-value="option2">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">6</div>
+                                                <div class="matrix-element">2</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">1</div>
+                                                <div class="matrix-element">8</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn" id="checkAnswer9">تحقق من الإجابة</button>
+                            <div class="quiz-result" id="quizResult9"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 10: ضرب مصفوفة بعدد حقيقي -->
+        <div class="slide" id="slide10">
+            <div class="slide-content">
+                <h1 class="slide-title">ضرب مصفوفة بعدد حقيقي</h1>
+                <div class="slide-body">
+                    <div class="definition">
+                        <h2 class="content-title">تعريف ضرب المصفوفة بعدد حقيقي</h2>
+                        <p class="content-text">عند ضرب مصفوفة بعدد حقيقي، نضرب كل عنصر من عناصر المصفوفة في ذلك العدد.</p>
+                    </div>
+                    
+                    <div class="example">
+                        <h2 class="content-title">مثال:</h2>
+                        <p class="content-text">إذا كانت المصفوفة A:</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">3</div>
+                                    <div class="matrix-element">2</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">1</div>
+                                    <div class="matrix-element">-4</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="content-text">فإن 3 × A =</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">9</div>
+                                    <div class="matrix-element">6</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">3</div>
+                                    <div class="matrix-element">-12</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity">
+                        <h3 class="activity-title">نشاط تفاعلي: ضرب مصفوفة بعدد</h3>
+                        <div class="quiz-container">
+                            <div class="quiz-question">ما هو ناتج ضرب المصفوفة التالية في العدد 2؟</div>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">4</div>
+                                        <div class="matrix-element">-1</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">0</div>
+                                        <div class="matrix-element">3</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="option1">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">8</div>
+                                                <div class="matrix-element">-2</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">0</div>
+                                                <div class="matrix-element">6</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="quiz-option" data-value="option2">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">6</div>
+                                                <div class="matrix-element">-3</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">2</div>
+                                                <div class="matrix-element">5</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn" id="checkAnswer10">تحقق من الإجابة</button>
+                            <div class="quiz-result" id="quizResult10"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 11: ضرب المصفوفات -->
+        <div class="slide" id="slide11">
+            <div class="slide-content">
+                <h1 class="slide-title">ضرب المصفوفات</h1>
+                <div class="slide-body">
+                    <div class="definition">
+                        <h2 class="content-title">شروط ضرب المصفوفات</h2>
+                        <p class="content-text">الشرط: أن يكون عدد الأعمدة في المصفوفة الأولى مساوياً لعدد الصفوف في المصفوفة الثانية.</p>
+                        <p class="content-text">الطريقة: ضرب صفوف المصفوفة الأولى في أعمدة المصفوفة الثانية.</p>
+                    </div>
+                    
+                    <div class="example">
+                        <h2 class="content-title">مثال:</h2>
+                        <p class="content-text">إذا كانت:</p>
+                        <div class="media-container">
+                            <div class="media-item">
+                                <p class="content-text">المصفوفة A:</p>
+                                <div class="matrix-container">
+                                    <div class="matrix">
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">3</div>
+                                            <div class="matrix-element">2</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">1</div>
+                                            <div class="matrix-element">-4</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="media-item">
+                                <p class="content-text">المصفوفة B:</p>
+                                <div class="matrix-container">
+                                    <div class="matrix">
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">5</div>
+                                            <div class="matrix-element">0</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">2</div>
+                                            <div class="matrix-element">7</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="content-text">فإن A × B =</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">19</div>
+                                    <div class="matrix-element">14</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">-3</div>
+                                    <div class="matrix-element">-28</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity">
+                        <h3 class="activity-title">نشاط تفاعلي: ضرب المصفوفات</h3>
+                        <div class="quiz-container">
+                            <div class="quiz-question">ما هو ناتج ضرب المصفوفتين التاليتين؟</div>
+                            <div class="media-container">
+                                <div class="media-item">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">1</div>
+                                                <div class="matrix-element">2</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="media-item">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">3</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">4</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="11">11</div>
+                                <div class="quiz-option" data-value="12">12</div>
+                                <div class="quiz-option" data-value="13">13</div>
+                                <div class="quiz-option" data-value="14">14</div>
+                            </div>
+                            <button class="btn" id="checkAnswer11">تحقق من الإجابة</button>
+                            <div class="quiz-result" id="quizResult11"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 12: أهداف المحددات -->
+        <div class="slide" id="slide12">
+            <div class="slide-content">
+                <h1 class="slide-title">أهداف تعلم المحددات</h1>
+                <div class="slide-body">
+                    <div class="learning-objectives">
+                        <h2 class="objectives-title">الأهداف التعليمية للمحددات</h2>
+                        <ul class="objectives-list">
+                            <li>تعريف المحددات وأهميتها في الرياضيات</li>
+                            <li>تمييز المحددات عن المصفوفات</li>
+                            <li>حساب قيمة المحددات للمصفوفات 2×2 و 3×3</li>
+                            <li>إيجاد مقلوب المصفوفة باستخدام المحددات</li>
+                            <li>تطبيق المحددات في حل أنظمة المعادلات الخطية</li>
+                            <li>فهم العلاقة بين المحددات وقابلية عكس المصفوفة</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="market-connection">
+                        <h3 class="market-connection-title">ارتباط بسوق العمل</h3>
+                        <p class="content-text">المحددات أساسية في مجالات مثل:</p>
+                        <ul class="content-text">
+                            <li>حل أنظمة المعادلات الخطية في الهندسة</li>
+                            <li>الرسوميات الحاسوبية وتحويلات المصفوفات</li>
+                            <li>الذكاء الاصطناعي وتعلم الآلة</li>
+                            <li>الفيزياء والهندسة الكهربائية</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 13: مقدمة المحددات -->
+        <div class="slide" id="slide13">
+            <div class="slide-content">
+                <h1 class="slide-title">مقدمة في المحددات</h1>
+                <div class="slide-body">
+                    <div class="definition">
+                        <h2 class="content-title">تعريف المحددات</h2>
+                        <p class="content-text">المحددات هي قيمة عددية حقيقية تُحسب من المصفوفة المربعة وفق قواعد محددة.</p>
+                    </div>
+                    
+                    <p class="content-text">تُعد المحددات من المفاهيم الأساسية في الرياضيات وخصوصاً في الجبر الخطي، إذ تلعب دوراً مهماً في العديد من التطبيقات العملية والعلمية.</p>
+                    
+                    <p class="content-text">من خلال المحددات يمكننا:</p>
+                    <ul class="content-text">
+                        <li>تحديد قابلية الأنظمة الخطية للحل</li>
+                        <li>معرفة ما إذا كانت المصفوفة قابلة للعكس (الانعكاس) أم لا</li>
+                        <li>حساب المساحات والأحجام في الهندسة التحليلية</li>
+                        <li>تطبيقات في الفيزياء، الاقتصاد، والحوسبة</li>
+                    </ul>
+                    
+                    <div class="brainstorming">
+                        <h3 class="brainstorming-title">عصف ذهني</h3>
+                        <p class="content-text">تخيلي أنكِ مهندسة برمجيات، كيف يمكن أن تستفيدي من المحددات في عملك؟</p>
+                        <textarea id="brainstormingInput" rows="4" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd; margin: 10px 0;"></textarea>
+                        <button class="btn" id="saveBrainstorming">حفظ الأفكار</button>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 14: قانون إيجاد المحدد 2×2 -->
+        <div class="slide" id="slide14">
+            <div class="slide-content">
+                <h1 class="slide-title">قانون إيجاد المحدد 2×2</h1>
+                <div class="slide-body">
+                    <div class="content-section">
+                        <h2 class="content-title">قانون إيجاد المحدد من الرتبة 2×2</h2>
+                        <p class="content-text">حاصل ضرب عناصر القطر الرئيسي (النازل) - حاصل ضرب عناصر القطر الفرعي (الصاعد)</p>
+                        
+                        <!-- مكان للصورة -->
+                        <div class="image-placeholder">
+                            <img src="determinant-2x2.jpg" alt="قانون إيجاد المحدد 2×2" class="media-image">
+                        </div>
+                        
+                        <p class="math-equation">\( A = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \)</p>
+                        <p class="math-equation">\( |A| = ad - bc \)</p>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 15: قانون إيجاد المحدد 3×3 فاكثر -->
+        <div class="slide" id="slide15">
+            <div class="slide-content">
+                <h1 class="slide-title">قانون إيجاد المحدد 3×3 فاكثر</h1>
+                <div class="slide-body">
+                    <div class="content-section">
+                        <h2 class="content-title">قانون إيجاد المحدد من الرتبة 3×3 فاكثر</h2>
+                        <p class="content-text">نستطيع إيجاده بطريقة تكرار الأقطار أو باستخدام طريقة لابلاس للتوسيع.</p>
+                        
+                        <!-- مكان للصورة -->
+                        <div class="image-placeholder">
+                            <img src="determinant-3x3.jpg" alt="قانون إيجاد المحدد 3×3 فاكثر" class="media-image">
+                        </div>
+                        
+                        <p class="math-equation">\( A = \begin{bmatrix} a_1 & b_1 & c_1 \\ a_2 & b_2 & c_2 \\ a_3 & b_3 & c_3 \end{bmatrix} \)</p>
+                        <p class="math-equation">\( |A| = (a_1b_2c_3 + b_1c_2a_3 + c_1a_2b_3) - (a_3b_2c_1 + b_3c_2a_1 + c_3a_2b_1) \)</p>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 16: محدد 2×2 -->
+        <div class="slide" id="slide16">
+            <div class="slide-content">
+                <h1 class="slide-title">محدد المصفوفة 2×2</h1>
+                <div class="slide-body">
+                    <div class="formula">
+                        <h2 class="content-title">قانون إيجاد المحدد من الرتبة 2×2</h2>
+                        <p class="content-text">حاصل ضرب عناصر القطر الرئيسي (النازل) - حاصل ضرب عناصر القطر الفرعي (الصاعد)</p>
+                        <p class="math-equation">\( A = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \)</p>
+                        <p class="math-equation">\( |A| = ad - bc \)</p>
+                    </div>
+                    
+                    <div class="example">
+                        <h2 class="content-title">مثال:</h2>
+                        <p class="content-text">إذا كانت المصفوفة A:</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">2</div>
+                                    <div class="matrix-element">3</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">4</div>
+                                    <div class="matrix-element">4</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="content-text">فإن \( |A| = (2 \times 4) - (3 \times 4) = 8 - 12 = -4 \)</p>
+                    </div>
+                    
+                    <div class="example">
+                        <h2 class="content-title">مثال آخر:</h2>
+                        <p class="content-text">إذا كانت المصفوفة B:</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">1</div>
+                                    <div class="matrix-element">3</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">2</div>
+                                    <div class="matrix-element">6</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="content-text">فإن \( |B| = (1 \times 6) - (3 \times 2) = 6 - 6 = 0 \)</p>
+                    </div>
+                    
+                    <div class="activity">
+                        <h3 class="activity-title">نشاط تفاعلي: حساب محدد 2×2</h3>
+                        <div class="quiz-container">
+                            <div class="quiz-question">ما هو محدد المصفوفة التالية؟</div>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">3</div>
+                                        <div class="matrix-element">5</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">1</div>
+                                        <div class="matrix-element">4</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="7">7</div>
+                                <div class="quiz-option" data-value="12">12</div>
+                                <div class="quiz-option" data-value="17">17</div>
+                                <div class="quiz-option" data-value="20">20</div>
+                            </div>
+                            <button class="btn" id="checkAnswer16">تحقق من الإجابة</button>
+                            <div class="quiz-result" id="quizResult16"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 17: محدد 3×3 -->
+        <div class="slide" id="slide17">
+            <div class="slide-content">
+                <h1 class="slide-title">محدد المصفوفة 3×3</h1>
+                <div class="slide-body">
+                    <div class="formula">
+                        <h2 class="content-title">قانون إيجاد المحدد من الرتبة 3×3</h2>
+                        <p class="content-text">نستطيع إيجاده بطريقة تكرار الأقطار:</p>
+                        <p class="content-text">نقوم بتكرار العمودين الأول والثاني من اليسار، ثم:</p>
+                        <p class="content-text">حاصل مجموع ضرب عناصر الأقطار الرئيسية (النازلة) - حاصل مجموع ضرب عناصر الأقطار الفرعية (الصاعدة)</p>
+                        <p class="math-equation">\( A = \begin{bmatrix} a_1 & b_1 & c_1 \\ a_2 & b_2 & c_2 \\ a_3 & b_3 & c_3 \end{bmatrix} \)</p>
+                        <p class="math-equation">\( |A| = (a_1b_2c_3 + b_1c_2a_3 + c_1a_2b_3) - (a_3b_2c_1 + b_3c_2a_1 + c_3a_2b_1) \)</p>
+                    </div>
+                    
+                    <div class="activity">
+                        <h3 class="activity-title">نشاط تفاعلي: حساب محدد 3×3</h3>
+                        <div class="quiz-container">
+                            <div class="quiz-question">ما هو محدد المصفوفة التالية؟</div>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">2</div>
+                                        <div class="matrix-element">0</div>
+                                        <div class="matrix-element">1</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">3</div>
+                                        <div class="matrix-element">2</div>
+                                        <div class="matrix-element">0</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">1</div>
+                                        <div class="matrix-element">1</div>
+                                        <div class="matrix-element">1</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="3">3</div>
+                                <div class="quiz-option" data-value="5">5</div>
+                                <div class="quiz-option" data-value="7">7</div>
+                                <div class="quiz-option" data-value="9">9</div>
+                            </div>
+                            <button class="btn" id="checkAnswer17">تحقق من الإجابة</button>
+                            <div class="quiz-result" id="quizResult17"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 18: مثال محدد 3×3 -->
+        <div class="slide" id="slide18">
+            <div class="slide-content">
+                <h1 class="slide-title">مثال على محدد المصفوفة 3×3</h1>
+                <div class="slide-body">
+                    <div class="example">
+                        <h2 class="content-title">مثال تفصيلي:</h2>
+                        <p class="content-text">إذا كانت المصفوفة A:</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">1</div>
+                                    <div class="matrix-element">2</div>
+                                    <div class="matrix-element">3</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">1</div>
+                                    <div class="matrix-element">4</div>
+                                    <div class="matrix-element">0</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">5</div>
+                                    <div class="matrix-element">2</div>
+                                    <div class="matrix-element">6</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-by-step">
+                            <div class="step">
+                                <span class="step-number">1</span>
+                                <span>الأقطار الرئيسية: \( (1 \times 4 \times 6) + (2 \times 0 \times 5) + (3 \times 1 \times 2) = 24 + 0 + 6 = 30 \)</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">2</span>
+                                <span>الأقطار الفرعية: \( (5 \times 4 \times 3) + (2 \times 0 \times 1) + (6 \times 1 \times 2) = 60 + 0 + 12 = 72 \)</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">3</span>
+                                <span>المحدد = \( 30 - 72 = -42 \)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="example">
+                        <h2 class="content-title">مثال آخر:</h2>
+                        <p class="content-text">لحساب detA و detB و detAB عندما:</p>
+                        <div class="media-container">
+                            <div class="media-item">
+                                <p class="content-text">A =</p>
+                                <div class="matrix-container">
+                                    <div class="matrix">
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">2</div>
+                                            <div class="matrix-element">3</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">4</div>
+                                            <div class="matrix-element">4</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="media-item">
+                                <p class="content-text">B =</p>
+                                <div class="matrix-container">
+                                    <div class="matrix">
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">1</div>
+                                            <div class="matrix-element">3</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                        <div class="matrix-row">
+                                            <span class="matrix-bracket">[</span>
+                                            <div class="matrix-element">2</div>
+                                            <div class="matrix-element">6</div>
+                                            <span class="matrix-bracket">]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-by-step">
+                            <div class="step">
+                                <span class="step-number">1</span>
+                                <span>detA = \( (2 \times 4) - (3 \times 4) = 8 - 12 = -4 \)</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">2</span>
+                                <span>detB = \( (1 \times 6) - (3 \times 2) = 6 - 6 = 0 \)</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">3</span>
+                                <span>AB = \( \begin{bmatrix} 2 \times 1 + 3 \times 2 & 2 \times 3 + 3 \times 6 \\ 4 \times 1 + 4 \times 2 & 4 \times 3 + 4 \times 6 \end{bmatrix} = \begin{bmatrix} 8 & 24 \\ 12 & 36 \end{bmatrix} \)</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">4</span>
+                                <span>detAB = \( (8 \times 36) - (24 \times 12) = 288 - 288 = 0 \)</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">5</span>
+                                <span>ملاحظة: \( detA \times detB = (-4) \times 0 = 0 = detAB \)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 19: معكوس المصفوفة -->
+        <div class="slide" id="slide19">
+            <div class="slide-content">
+                <h1 class="slide-title">معكوس المصفوفة</h1>
+                <div class="slide-body">
+                    <div class="definition">
+                        <h2 class="content-title">تعريف معكوس المصفوفة</h2>
+                        <p class="content-text">إذا كانت A مصفوفة مربعة وكان محددها لا يساوي الصفر، فإنه يوجد معكوس للمصفوفة A ويرمز له بالرمز \( A^{-1} \).</p>
+                    </div>
+                    
+                    <div class="formula">
+                        <h2 class="content-title">طريقة إيجاد معكوس المصفوفة (لمصفوفة 2×2)</h2>
+                        <p class="math-equation">\( A = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \)</p>
+                        <p class="math-equation">\( A^{-1} = \frac{1}{ad-bc} \begin{bmatrix} d & -b \\ -c & a \end{bmatrix} \)</p>
+                    </div>
+                    
+                    <div class="example">
+                        <h2 class="content-title">مثال:</h2>
+                        <p class="content-text">إذا كانت المصفوفة A:</p>
+                        <div class="matrix-container">
+                            <div class="matrix">
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">2</div>
+                                    <div class="matrix-element">3</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                                <div class="matrix-row">
+                                    <span class="matrix-bracket">[</span>
+                                    <div class="matrix-element">4</div>
+                                    <div class="matrix-element">4</div>
+                                    <span class="matrix-bracket">]</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-by-step">
+                            <div class="step">
+                                <span class="step-number">1</span>
+                                <span>المحدد = \( (2 \times 4) - (3 \times 4) = 8 - 12 = -4 \)</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">2</span>
+                                <span>نبدل مواقع عناصر القطر الرئيسي: 2 و 4 تصبح 4 و 2</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">3</span>
+                                <span>نغير إشارتي عناصر القطر الفرعي: 3 و 4 تصبح -3 و -4</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">4</span>
+                                <span>نقسم كل عنصر على المحدد (-4):</span>
+                            </div>
+                        </div>
+                        
+                        <p class="content-text">\( A^{-1} = \frac{1}{-4} \begin{bmatrix} 4 & -3 \\ -4 & 2 \end{bmatrix} = \begin{bmatrix} -1 & 0.75 \\ 1 & -0.5 \end{bmatrix} \)</p>
+                    </div>
+                    
+                    <div class="activity">
+                        <h3 class="activity-title">نشاط تفاعلي: إيجاد المعكوس</h3>
+                        <div class="quiz-container">
+                            <div class="quiz-question">ما هو معكوس المصفوفة التالية؟</div>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">2</div>
+                                        <div class="matrix-element">3</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">2</div>
+                                        <div class="matrix-element">1</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="option1">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">-0.25</div>
+                                                <div class="matrix-element">0.75</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">0.5</div>
+                                                <div class="matrix-element">-0.5</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="quiz-option" data-value="option2">
+                                    <div class="matrix-container">
+                                        <div class="matrix">
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">1</div>
+                                                <div class="matrix-element">-3</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                            <div class="matrix-row">
+                                                <span class="matrix-bracket">[</span>
+                                                <div class="matrix-element">-2</div>
+                                                <div class="matrix-element">2</div>
+                                                <span class="matrix-bracket">]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn" id="checkAnswer19">تحقق من الإجابة</button>
+                            <div class="quiz-result" id="quizResult19"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn btn-next">التالي <i class="fas fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشريحة 20: اختبار نهائي -->
+        <div class="slide" id="slide20">
+            <div class="slide-content">
+                <h1 class="slide-title">اختبار نهائي</h1>
+                <div class="slide-body">
+                    <div class="activity">
+                        <h3 class="activity-title">اختبر معرفتك</h3>
+                        <div class="quiz-container">
+                            <div class="quiz-question">1. ما هي رتبة المصفوفة التالية؟</div>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">2</div>
+                                        <div class="matrix-element">5</div>
+                                        <div class="matrix-element">1</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">3</div>
+                                        <div class="matrix-element">0</div>
+                                        <div class="matrix-element">4</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="2x2">2 × 2</div>
+                                <div class="quiz-option" data-value="2x3">2 × 3</div>
+                                <div class="quiz-option" data-value="3x2">3 × 2</div>
+                                <div class="quiz-option" data-value="3x3">3 × 3</div>
+                            </div>
+                            
+                            <div class="quiz-question" style="margin-top: 20px;">2. ما هو محدد المصفوفة التالية؟</div>
+                            <div class="matrix-container">
+                                <div class="matrix">
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">3</div>
+                                        <div class="matrix-element">5</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span class="matrix-bracket">[</span>
+                                        <div class="matrix-element">1</div>
+                                        <div class="matrix-element">4</div>
+                                        <span class="matrix-bracket">]</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="7">7</div>
+                                <div class="quiz-option" data-value="12">12</div>
+                                <div class="quiz-option" data-value="17">17</div>
+                                <div class="quiz-option" data-value="20">20</div>
+                            </div>
+                            
+                            <div class="quiz-question" style="margin-top: 20px;">3. ما هو معكوس المصفوفة \( \begin{bmatrix} 2 & 1 \\ 1 & 1 \end{bmatrix} \)؟</div>
+                            <div class="quiz-options">
+                                <div class="quiz-option" data-value="option1">\( \begin{bmatrix} 1 & -1 \\ -1 & 2 \end{bmatrix} \)</div>
+                                <div class="quiz-option" data-value="option2">\( \begin{bmatrix} 2 & -1 \\ -1 & 1 \end{bmatrix} \)</div>
+                                <div class="quiz-option" data-value="option3">\( \begin{bmatrix} 1 & 1 \\ 1 & 2 \end{bmatrix} \)</div>
+                                <div class="quiz-option" data-value="option4">\( \begin{bmatrix} 2 & 1 \\ 1 & 1 \end{bmatrix} \)</div>
+                            </div>
+                            
+                            <button class="btn" id="checkFinalQuiz" style="margin-top: 20px;">تحقق من الإجابات</button>
+                            <div class="quiz-result" id="finalQuizResult"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-section">
+                        <h2 class="content-title">تهانينا!</h2>
+                        <p class="content-text">لقد أكملت بنجاح رحلة التعلم حول المصفوفات والمحددات. نأمل أن تكون هذه المعرفة مفيدة لك في مسيرتك التعليمية والمهنية.</p>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-prev"><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="btn" id="restartCourse">إعادة الدورة <i class="fas fa-redo"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- شريط التقدم -->
+    <div class="slide-progress" id="slideProgress">
+        <!-- سيتم إضافة نقاط التقدم ديناميكيًا -->
+    </div>
+
+    <script>
+        // بيانات الشرائح
+        const slides = [
+            { id: 'slide0', title: 'مقدمة في المصفوفات' },
+            { id: 'slide1', title: 'سؤال: ماذا تلاحظين؟' },
+            { id: 'slide2', title: 'كم عدد أحمر الشفاه؟' },
+            { id: 'slide3', title: 'أهداف المصفوفات' },
+            { id: 'slide4', title: 'تعريف المصفوفة وأهميتها' },
+            { id: 'slide5', title: 'أنواع المصفوفات وخصائصها' },
+            { id: 'slide6', title: 'رتبة المصفوفة' },
+            { id: 'slide7', title: 'تساوي المصفوفات' },
+            { id: 'slide8', title: 'منقول المصفوفة' },
+            { id: 'slide9', title: 'جمع وطرح المصفوفات' },
+            { id: 'slide10', title: 'ضرب مصفوفة بعدد' },
+            { id: 'slide11', title: 'ضرب المصفوفات' },
+            { id: 'slide12', title: 'أهداف المحددات' },
+            { id: 'slide13', title: 'مقدمة في المحددات' },
+            { id: 'slide14', title: 'قانون المحدد 2×2' },
+            { id: 'slide15', title: 'قانون المحدد 3×3' },
+            { id: 'slide16', title: 'محدد المصفوفة 2×2' },
+            { id: 'slide17', title: 'محدد المصفوفة 3×3' },
+            { id: 'slide18', title: 'مثال محدد 3×3' },
+            { id: 'slide19', title: 'معكوس المصفوفة' },
+            { id: 'slide20', title: 'اختبار نهائي' }
+        ];
+        
+        let currentSlide = 0;
+        
+        // تهيئة نقاط التقدم
+        function initProgressDots() {
+            const progressContainer = document.getElementById('slideProgress');
+            progressContainer.innerHTML = '';
+            
+            slides.forEach((slide, index) => {
+                const dot = document.createElement('div');
+                dot.className = `progress-dot ${index === 0 ? 'active' : ''}`;
+                dot.dataset.index = index;
+                dot.addEventListener('click', () => goToSlide(index));
+                progressContainer.appendChild(dot);
+            });
+        }
+        
+        // تحديث شريط التقدم
+        function updateProgressBar() {
+            const progress = (currentSlide / (slides.length - 1)) * 100;
+            document.getElementById('loadingBar').style.transform = `scaleX(${progress / 100})`;
+        }
+        
+        // الانتقال إلى شريحة محددة
+        function goToSlide(index) {
+            // إخفاء جميع الشرائح
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // إظهار الشريحة المطلوبة
+            document.getElementById(slides[index].id).classList.add('active');
+            
+            // تحديث نقاط التقدم
+            document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+                if (i <= index) {
+                    dot.classList.add('completed');
+                } else {
+                    dot.classList.remove('completed');
+                }
+                
+                dot.classList.toggle('active', i === index);
+            });
+            
+            // تحديث أزرار التنقل
+            updateNavButtons(index);
+            
+            // تحديث القائمة الجانبية
+            document.querySelectorAll('.slide-nav-link').forEach((link, i) => {
+                link.classList.toggle('active', i === index);
+            });
+            
+            // تحديث شريط التقدم
+            updateProgressBar();
+            
+            currentSlide = index;
+            
+            // التمرير إلى أعلى الصفحة
+            window.scrollTo(0, 0);
+        }
+        
+        // تحديث أزرار التنقل
+        function updateNavButtons(index) {
+            const prevButtons = document.querySelectorAll('.btn-prev');
+            const nextButtons = document.querySelectorAll('.btn-next');
+            
+            prevButtons.forEach(btn => {
+                btn.disabled = index === 0;
+            });
+            
+            nextButtons.forEach(btn => {
+                btn.disabled = index === slides.length - 1;
+            });
+        }
+        
+        // التالي
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+        
+        // السابق
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+        
+        // إعادة الدورة
+        function restartCourse() {
+            goToSlide(0);
+        }
+        
+        // تهيئة الأحداث
+        function initEvents() {
+            // أحداث أزرار التنقل
+            document.querySelectorAll('.btn-next').forEach(btn => {
+                btn.addEventListener('click', nextSlide);
+            });
+            
+            document.querySelectorAll('.btn-prev').forEach(btn => {
+                btn.addEventListener('click', prevSlide);
+            });
+            
+            document.getElementById('restartCourse').addEventListener('click', restartCourse);
+            
+            // أحداث القائمة الجانبية
+            document.querySelectorAll('.slide-nav-link').forEach((link, index) => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    goToSlide(index);
+                });
+            });
+            
+            // أحداث القائمة العلوية
+            document.querySelectorAll('.nav-links a').forEach((link) => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = e.target.getAttribute('href').substring(1);
+                    const slideIndex = slides.findIndex(slide => slide.id === target);
+                    if (slideIndex !== -1) {
+                        goToSlide(slideIndex);
+                    }
+                });
+            });
+            
+            // أحداث المسابقات
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // إزالة التحديد من جميع الخيارات في نفس المجموعة
+                    const options = this.parentElement.querySelectorAll('.quiz-option');
+                    options.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // تحديد الخيار الحالي
+                    this.classList.add('selected');
+                });
+            });
+            
+            // حدث التحقق من الإجابة الأولى
+            document.getElementById('checkAnswer0').addEventListener('click', function() {
+                const selectedOption = document.querySelector('#slide0 .quiz-option.selected');
+                const resultElement = document.getElementById('quizResult0');
+                
+                if (!selectedOption) {
+                    alert('يرجى اختيار إجابة أولاً');
+                    return;
+                }
+                
+                if (selectedOption.dataset.value === '12') {
+                    resultElement.textContent = 'إجابة صحيحة! أحسنتِ.';
+                    resultElement.className = 'quiz-result correct';
+                } else {
+                    resultElement.textContent = 'إجابة خاطئة. حاولي مرة أخرى.';
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث التحقق من الإجابة الثانية
+            document.getElementById('checkAnswer2').addEventListener('click', function() {
+                const selectedOption = document.querySelector('#slide2 .quiz-option.selected');
+                const resultElement = document.getElementById('quizResult2');
+                
+                if (!selectedOption) {
+                    alert('يرجى اختيار إجابة أولاً');
+                    return;
+                }
+                
+                if (selectedOption.dataset.value === '12') {
+                    resultElement.textContent = 'إجابة صحيحة! أحسنتِ.';
+                    resultElement.className = 'quiz-result correct';
+                } else {
+                    resultElement.textContent = 'إجابة خاطئة. حاولي مرة أخرى.';
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث التحقق من الإجابة الخامسة
+            document.getElementById('checkAnswer5').addEventListener('click', function() {
+                const selectedOption = document.querySelector('#slide5 .quiz-option.selected');
+                const resultElement = document.getElementById('quizResult5');
+                
+                if (!selectedOption) {
+                    alert('يرجى اختيار إجابة أولاً');
+                    return;
+                }
+                
+                if (selectedOption.dataset.value === 'وحدة') {
+                    resultElement.textContent = 'إجابة صحيحة! هذه مصفوفة الوحدة.';
+                    resultElement.className = 'quiz-result correct';
+                } else {
+                    resultElement.textContent = 'إجابة خاطئة. حاولي مرة أخرى.';
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث التحقق من الإجابة السادسة
+            document.getElementById('checkAnswer6').addEventListener('click', function() {
+                const selectedOption = document.querySelector('#slide6 .quiz-option.selected');
+                const resultElement = document.getElementById('quizResult6');
+                
+                if (!selectedOption) {
+                    alert('يرجى اختيار إجابة أولاً');
+                    return;
+                }
+                
+                if (selectedOption.dataset.value === '3x2') {
+                    resultElement.textContent = 'إجابة صحيحة! الرتبة هي 3 × 2.';
+                    resultElement.className = 'quiz-result correct';
+                } else {
+                    resultElement.textContent = 'إجابة خاطئة. حاولي مرة أخرى.';
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث التحقق من الإجابة السابعة
+            document.getElementById('checkAnswer7').addEventListener('click', function() {
+                const selectedOption = document.querySelector('#slide7 .quiz-option.selected');
+                const resultElement = document.getElementById('quizResult7');
+                
+                if (!selectedOption) {
+                    alert('يرجى اختيار إجابة أولاً');
+                    return;
+                }
+                
+                if (selectedOption.dataset.value === 'S2') {
+                    resultElement.textContent = 'إجابة صحيحة! المصفوفة الثانية متساوية مع F.';
+                    resultElement.className = 'quiz-result correct';
+                } else {
+                    resultElement.textContent = 'إجابة خاطئة. حاولي مرة أخرى.';
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث التحقق من الإجابة الثامنة
+            document.getElementById('checkAnswer8').addEventListener('click', function() {
+                const selectedOption = document.querySelector('#slide8 .quiz-option.selected');
+                const resultElement = document.getElementById('quizResult8');
+                
+                if (!selectedOption) {
+                    alert('يرجى اختيار إجابة أولاً');
+                    return;
+                }
+                
+                if (selectedOption.dataset.value === 'option1') {
+                    resultElement.textContent = 'إجابة صحيحة! هذا هو منقول المصفوفة.';
+                    resultElement.className = 'quiz-result correct';
+                } else {
+                    resultElement.textContent = 'إجابة خاطئة. حاولي مرة أخرى.';
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث التحقق من الإجابة التاسعة
+            document.getElementById('checkAnswer9').addEventListener('click', function() {
+                const selectedOption = document.querySelector('#slide9 .quiz-option.selected');
+                const resultElement = document.getElementById('quizResult9');
+                
+                if (!selectedOption) {
+                    alert('يرجى اختيار إجابة أولاً');
+                    return;
+                }
+                
+                if (selectedOption.dataset.value === 'option1') {
+                    resultElement.textContent = 'إجابة صحيحة! هذا هو ناتج جمع المصفوفتين.';
+                    resultElement.className = 'quiz-result correct';
+                } else {
+                    resultElement.textContent = 'إجابة خاطئة. حاولي مرة أخرى.';
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث التحقق من الإجابة العاشرة
+            document.getElementById('checkAnswer10').addEventListener('click', function() {
+                const selectedOption = document.querySelector('#slide10 .quiz-option.selected');
+                const resultElement = document.getElementById('quizResult10');
+                
+                if (!selectedOption) {
+                    alert('يرجى اختيار إجابة أولاً');
+                    return;
+                }
+                
+                if (selectedOption.dataset.value === 'option1') {
+                    resultElement.textContent = 'إجابة صحيحة! هذا هو ناتج ضرب المصفوفة في 2.';
+                    resultElement.className = 'quiz-result correct';
+                } else {
+                    resultElement.textContent = 'إجابة خاطئة. حاولي مرة أخرى.';
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث التحقق من الإجابة الحادية عشرة
+            document.getElementById('checkAnswer11').addEventListener('click', function() {
+                const selectedOption = document.querySelector('#slide11 .quiz-option.selected');
+                const resultElement = document.getElementById('quizResult11');
+                
+                if (!selectedOption) {
+                    alert('يرجى اختيار إجابة أولاً');
+                    return;
+                }
+                
+                if (selectedOption.dataset.value === '11') {
+                    resultElement.textContent = 'إجابة صحيحة! ناتج الضرب هو 11.';
+                    resultElement.className = 'quiz-result correct';
+                } else {
+                    resultElement.textContent = 'إجابة خاطئة. حاولي مرة أخرى.';
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث التحقق من الإجابة السادسة عشرة
+            document.getElementById('checkAnswer16').addEventListener('click', function() {
+                const selectedOption = document.querySelector('#slide16 .quiz-option.selected');
+                const resultElement = document.getElementById('quizResult16');
+                
+                if (!selectedOption) {
+                    alert('يرجى اختيار إجابة أولاً');
+                    return;
+                }
+                
+                if (selectedOption.dataset.value === '7') {
+                    resultElement.textContent = 'إجابة صحيحة! المحدد هو 7.';
+                    resultElement.className = 'quiz-result correct';
+                } else {
+                    resultElement.textContent = 'إجابة خاطئة. حاولي مرة أخرى.';
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث التحقق من الإجابة السابعة عشرة
+            document.getElementById('checkAnswer17').addEventListener('click', function() {
+                const selectedOption = document.querySelector('#slide17 .quiz-option.selected');
+                const resultElement = document.getElementById('quizResult17');
+                
+                if (!selectedOption) {
+                    alert('يرجى اختيار إجابة أولاً');
+                    return;
+                }
+                
+                if (selectedOption.dataset.value === '3') {
+                    resultElement.textContent = 'إجابة صحيحة! المحدد هو 3.';
+                    resultElement.className = 'quiz-result correct';
+                } else {
+                    resultElement.textContent = 'إجابة خاطئة. حاولي مرة أخرى.';
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث التحقق من الإجابة التاسعة عشرة
+            document.getElementById('checkAnswer19').addEventListener('click', function() {
+                const selectedOption = document.querySelector('#slide19 .quiz-option.selected');
+                const resultElement = document.getElementById('quizResult19');
+                
+                if (!selectedOption) {
+                    alert('يرجى اختيار إجابة أولاً');
+                    return;
+                }
+                
+                if (selectedOption.dataset.value === 'option1') {
+                    resultElement.textContent = 'إجابة صحيحة! هذا هو معكوس المصفوفة.';
+                    resultElement.className = 'quiz-result correct';
+                } else {
+                    resultElement.textContent = 'إجابة خاطئة. حاولي مرة أخرى.';
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث التحقق من الاختبار النهائي
+            document.getElementById('checkFinalQuiz').addEventListener('click', function() {
+                const question1Answer = document.querySelector('#slide20 .quiz-options:nth-child(2) .quiz-option.selected');
+                const question2Answer = document.querySelector('#slide20 .quiz-options:nth-child(5) .quiz-option.selected');
+                const question3Answer = document.querySelector('#slide20 .quiz-options:nth-child(7) .quiz-option.selected');
+                const resultElement = document.getElementById('finalQuizResult');
+                
+                if (!question1Answer || !question2Answer || !question3Answer) {
+                    alert('يرجى الإجابة على جميع الأسئلة أولاً');
+                    return;
+                }
+                
+                let correctAnswers = 0;
+                let feedback = '';
+                
+                if (question1Answer.dataset.value === '2x3') {
+                    correctAnswers++;
+                    feedback += 'السؤال الأول: صحيح ✓<br>';
+                } else {
+                    feedback += 'السؤال الأول: خطأ ✗ (الإجابة الصحيحة: 2 × 3)<br>';
+                }
+                
+                if (question2Answer.dataset.value === '7') {
+                    correctAnswers++;
+                    feedback += 'السؤال الثاني: صحيح ✓<br>';
+                } else {
+                    feedback += 'السؤال الثاني: خطأ ✗ (الإجابة الصحيحة: 7)<br>';
+                }
+                
+                if (question3Answer.dataset.value === 'option1') {
+                    correctAnswers++;
+                    feedback += 'السؤال الثالث: صحيح ✓<br>';
+                } else {
+                    feedback += 'السؤال الثالث: خطأ ✗ (الإجابة الصحيحة: \( \\begin{bmatrix} 1 & -1 \\\\ -1 & 2 \\end{bmatrix} \))<br>';
+                }
+                
+                feedback += `<br>درجتك: ${correctAnswers} من 3`;
+                
+                if (correctAnswers === 3) {
+                    resultElement.className = 'quiz-result correct';
+                    feedback = 'مبروك! لقد أجبتِ على جميع الأسئلة بشكل صحيح.<br>' + feedback;
+                } else {
+                    resultElement.className = 'quiz-result incorrect';
+                }
+                
+                resultElement.innerHTML = feedback;
+                resultElement.style.display = 'block';
+            });
+            
+            // حدث حفظ العصف الذهني
+            document.getElementById('saveBrainstorming').addEventListener('click', function() {
+                const brainstormingInput = document.getElementById('brainstormingInput');
+                if (brainstormingInput.value.trim() === '') {
+                    alert('يرجى كتابة أفكارك أولاً');
+                    return;
+                }
+                
+                alert('تم حفظ أفكارك بنجاح!');
+                brainstormingInput.value = '';
+            });
+            
+            // أحداث لوحة المفاتيح للتنقل
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    prevSlide();
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    nextSlide();
+                }
+            });
+        }
+        
+        // تهيئة التطبيق
+        function initApp() {
+            initProgressDots();
+            initEvents();
+            goToSlide(0);
+            updateProgressBar();
+        }
+        
+        // تشغيل التطبيق عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
